@@ -5,12 +5,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PatientResponseDTO {
+public class LoginResponseDTO {
 
     private Long id;
     private String fullName;
@@ -19,5 +18,7 @@ public class PatientResponseDTO {
     private String role;
     private LocalDate dateOfBirth;
     private String bloodGroup;
-    private LocalDateTime createdAt;
+    private String token; // ← JWT token
+    private String tokenType; // ← always "Bearer"
+    private String refreshToken;
 }
