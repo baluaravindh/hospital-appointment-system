@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "patients")
@@ -52,7 +54,10 @@ public class Patient {
     }
 
     @PrePersist
-    protected void onCreate(){
-        createdAt=LocalDateTime.now();
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
     }
+
+    @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Addresses> addresses = new ArrayList<>();
 }
