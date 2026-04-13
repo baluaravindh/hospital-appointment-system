@@ -1,5 +1,6 @@
 package com.balu.hospital.repository;
 
+import com.balu.hospital.entity.Appointment;
 import com.balu.hospital.entity.Doctor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -15,4 +16,5 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     List<Doctor> findByAvailable(boolean available);
 
     List<Doctor> findByFullNameContainingIgnoreCase(String keyword);
+
 }

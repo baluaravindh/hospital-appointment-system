@@ -2,11 +2,14 @@ package com.balu.hospital.service;
 
 import com.balu.hospital.dto.DoctorDto;
 import com.balu.hospital.dto.DoctorRequestDTO;
+import com.balu.hospital.entity.Appointment;
 import com.balu.hospital.entity.Doctor;
 import com.balu.hospital.exception.ResourceNotFoundException;
+import com.balu.hospital.repository.AppointmentRepository;
 import com.balu.hospital.repository.DoctorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,6 +19,7 @@ import java.util.stream.Collectors;
 public class DoctorService {
 
     private final DoctorRepository doctorRepository;
+    private final AppointmentRepository appointmentRepository;
 
     // addDoctor
     public DoctorDto addDoctor(DoctorRequestDTO dto) {
@@ -98,6 +102,35 @@ public class DoctorService {
         dto.setConsultationFee(doctor.getConsultationFee());
         dto.setAvailable(doctor.isAvailable());
         return dto;
+    }
+
+    // Step 1: Find doctor
+    @Transactional
+    public String toggleAvailability(Long doctorId) {
+        // Step 1: Find doctor
+        Doctor doctor = doctorRepository.findById(doctorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Doctor Not Found with id: " + doctorId));
+
+        // Step 2: If trying to mark unavailable,
+        // check for existing SCHEDULED appointments first
+        if (doctor.isAvailable()) {
+            boolean hasScheduledAppointments = appointmentRepository.existsByDoctorIdAndStatus(
+                    doctorId,
+                    Appointment.Status.SCHEDULED
+            );
+
+            if (hasScheduledAppointments) {
+                throw new RuntimeException("Doctor has scheduled appointments. Cancel them first.");
+            }
+
+            doctor.setAvailable(false);
+            doctorRepository.save(doctor);
+            return "Doctor " + doctor.getFullName() + " marked as unavailable";
+        } else {
+            doctor.setAvailable(true);
+            doctorRepository.save(doctor);
+            return "Doctor " + doctor.getFullName() + " marked as available";
+        }
     }
 
     private Doctor mapToEntity(DoctorRequestDTO dto) {

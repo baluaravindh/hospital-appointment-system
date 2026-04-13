@@ -79,4 +79,10 @@ public class DoctorController {
     public ResponseEntity<List<DoctorDto>> searchDoctorsByName(@RequestParam String keyword) {
         return ResponseEntity.ok(doctorService.searchDoctorsByName(keyword));
     }
+
+    @PatchMapping("/{id}/toggle-availability")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> toggleAvailability(@PathVariable Long id) {
+        return ResponseEntity.ok(doctorService.toggleAvailability(id));
+    }
 }
